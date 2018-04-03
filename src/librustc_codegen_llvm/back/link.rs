@@ -94,6 +94,7 @@ pub fn get_linker(sess: &Session) -> (PathBuf, Command) {
             LinkerFlavor::Gcc => "cc".as_ref(),
             LinkerFlavor::Ld => "ld".as_ref(),
             LinkerFlavor::Lld(_) => "lld".as_ref(),
+            LinkerFlavor::L4Bender => "l4-bender".as_ref(),
         });
 
     let mut cmd = cmd(linker_path);
