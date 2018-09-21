@@ -1,5 +1,5 @@
 use crate::spec::{LinkArgs, LinkerFlavor, PanicStrategy, TargetOptions};
-//use std::process::Command;
+use std::default::Default;
 
 pub fn opts() -> TargetOptions {
     let mut args = LinkArgs::new();
