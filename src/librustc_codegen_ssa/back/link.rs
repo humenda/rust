@@ -880,6 +880,7 @@ fn linker_and_flavor(sess: &Session) -> (PathBuf, LinkerFlavor) {
                     LinkerFlavor::Msvc => "link.exe",
                     LinkerFlavor::Lld(_) => "lld",
                     LinkerFlavor::PtxLinker => "rust-ptx-linker",
+                    LinkerFlavor::L4Bender => "l4-bender",
                 }),
                 flavor,
             )),
