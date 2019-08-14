@@ -870,7 +870,7 @@ impl Step for Analysis {
         let dst = image.join("lib/rustlib").join(target.triple).join("analysis");
         t!(fs::create_dir_all(&dst));
         builder.info(&format!("image_src: {:?}, dst: {:?}", image_src, dst));
-        builder.cp_r(&image_src, &dst);
+        //builder.cp_r(&image_src, &dst);
 
         let mut cmd = rust_installer(builder);
         cmd.arg("generate")
