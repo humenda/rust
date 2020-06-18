@@ -3,7 +3,6 @@ use super::command::Command;
 use super::symbol_export;
 use rustc_span::symbol::sym;
 
-use rustc_data_structures::fx::FxHashMap;
 use std::env;
 use std::ffi::{OsStr, OsString};
 use std::fs::{self, File};
@@ -1243,7 +1242,9 @@ impl<'a> Linker for L4Bender<'a> {
     fn partial_relro(&mut self) { self.cmd.arg("-z,relro"); }
     fn no_relro(&mut self) { self.cmd.arg("-z,norelro"); }
     fn build_static_executable(&mut self) { self.cmd.arg("-static"); }
-    fn args(&mut self, args: &[String]) { self.cmd.args(args); }
+    fn cmd(&mut self) -> &mut Command {
+        &mut self.cmd
+    }
 
     fn link_rust_dylib(&mut self, _: Symbol, _: &Path) {
         panic!("Rust dylibs not supported");
@@ -1282,19 +1283,15 @@ impl<'a> Linker for L4Bender<'a> {
 
     fn pgo_gen(&mut self) { }
 
-    fn debuginfo(&mut self) {
-        match self.sess.opts.debuginfo {
-            DebugInfo::None => {
-                // If we are building without debuginfo enabled and we were called with
-                // `-Zstrip-debuginfo-if-disabled=yes`, tell the linker to strip any debuginfo
-                // found when linking to get rid of symbols from libstd.
-                match self.sess.opts.debugging_opts.strip_debuginfo_if_disabled {
-                    Some(true) => { self.cmd.arg("-S"); },
-                    _ => {},
-                }
-            },
-            _ => {},
-        };
+    fn debuginfo(&mut self, strip: Strip) {
+        match strip {
+            Strip::None => {}
+            Strip::Debuginfo => {
+                self.cmd().arg("--strip-debug"); }
+            Strip::Symbols => {
+                self.cmd().arg("--strip-all");
+            }
+        }
     }
 
     fn no_default_libraries(&mut self) {
@@ -1314,11 +1311,8 @@ impl<'a> Linker for L4Bender<'a> {
         self.cmd.arg(&format!("--subsystem,{}", subsystem));
     }
 
-    fn finalize(&mut self) -> Command {
+    fn finalize(&mut self) {
         self.hint_static(); // Reset to default before returning the composed command line.
-        let mut cmd = Command::new("");
-        ::std::mem::swap(&mut cmd, &mut self.cmd);
-        cmd
     }
 
     fn group_start(&mut self) { self.cmd.arg("--start-group"); }
@@ -1329,6 +1323,8 @@ impl<'a> Linker for L4Bender<'a> {
     fn control_flow_guard(&mut self) {
         self.sess.warn("Windows Control Flow Guard is not supported by this linker.");
     }
+
+    fn no_crt_objects(&mut self) { }
 }
 
 impl<'a> L4Bender<'a> {

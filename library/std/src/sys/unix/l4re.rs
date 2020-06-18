@@ -56,7 +56,7 @@ pub mod net {
         }
 
         pub fn is_read_vectored(&self) -> bool {
-            unimpl!();
+            false
         }
 
         pub fn peek(&self, _: &mut [u8]) -> io::Result<usize> {
@@ -80,7 +80,7 @@ pub mod net {
         }
 
         pub fn is_write_vectored(&self) -> bool {
-            unimpl!();
+            false
         }
 
         pub fn set_timeout(&self, _: Option<Duration>, _: libc::c_int) -> io::Result<()> {
@@ -180,7 +180,7 @@ pub mod net {
         }
 
         pub fn is_read_vectored(&self) -> bool {
-            unimpl!();
+            false
         }
 
         pub fn write(&self, _: &[u8]) -> io::Result<usize> {
@@ -192,7 +192,7 @@ pub mod net {
         }
 
         pub fn is_write_vectored(&self) -> bool {
-            unimpl!();
+            false
         }
 
         pub fn peer_addr(&self) -> io::Result<SocketAddr> {
